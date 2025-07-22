@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="nav-bar">
+        <h1>Virtual Lab</h1>
+        <nav class="nav">
+          <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/working">How It Works</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <section class="container">
+      <form method="post" class="in">
+        <h1>Modulation Signal Visualization</h1>
+        <div class="types">
+          <label for="modulationType">Select Modulation Type:</label>
+          <select
+            id="modulationType"
+            name="modulationType"
+            onchange="toggleInputFields()">
+            <option value="" {% if not modulationType %}selected{% endif %}>--Select--</option>
+            <option value="AM" {% if modulationType == 'AM' %}selected{% endif %}>AM (Amplitude Modulation)</option>
+            <option value="FM" {% if modulationType == 'FM' %}selected{% endif %}>FM (Frequency Modulation)</option>
+            <option value="PM" {% if modulationType == 'PM' %}selected{% endif %}>PM (Phase Modulation)</option>
+            <option value="SSB" {% if modulationType == 'SSB' %}selected{% endif %}>SSB (Single Side Band)</option>
+            <option value="DSBSC" {% if modulationType == 'DSB-SC' %}selected{% endif %}>DSB-SC (Double Side Band - Suppressed Carrier)</option>
+            <option value="ASK" {% if modulationType == 'ASK' %}selected{% endif %}>ASK (Amplitude Shift Keying)</option>
+            <option value="FSK" {% if modulationType == 'FSK' %}selected{% endif %}>FSK (Frequency Shift Keying)</option>
+            <!-- <option value="QPSK" {% if modulationType == 'QPSK' %}selected{% endif %}>QPSK (Quadrature Phase Shift Keying)</option> -->
+            <option value="BPSK" {% if modulationType == 'BPSK' %}selected{% endif %}>BPSK (Binary Phase-Shift Keying)</option>
+          </select>
+        </div>
+
+        <!-- Analog Input Fields -->
+        <div class="input-section">
+          <div class="input-group analogInputs">
+            <label>Message Frequency:</label>
+            <input
+              type="number"
+              name="messageFrequency"
+              value="{{ messageFrequency | default('') }}"
+              step="0.1"
+              required
+            />
+          </div>
+
+          <div class="input-group analogInputs">
+            <label>Message Amplitude:</label>
+            <input
+              type="number"
+              name="messageAmplitude"
+              value="{{ messageAmplitude | default('') }}"
+              step="0.1"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label>Carrier Frequency:</label>
+            <input
+            type="number"
+            name="carrierFrequency"
+            value="{{ carrierFrequency | default('') }}"
+            step="0.1"
+            required
+            />
+          </div>
+          <div class="input-group">
+            <label>Carrier Amplitude:</label>
+            <input
+            type="number"
+            name="carrierAmplitude"
+            value="{{ carrierAmplitude | default('') }}"
+            step="0.1"
+            required
+            />
+          </div>
+          <div class="input-group analogInputs">
+            <label>Message Waveform:</label>
+            <select name="messageWaveform">
+              <option value="sine" {% if messageWaveform == 'sine' %}selected{% endif %}>Sine</option>
+              <option value="cos" {% if messageWaveform == 'cos' %}selected{% endif %}>Cos</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Carrier Waveform:</label>
+            <select name="carrierWaveform">
+              <option value="sine" {% if carrierWaveform == 'sine' %}selected{% endif %}>Sine</option>
+              <option value="cos" {% if carrierWaveform == 'cos' %}selected{% endif %}>Cos</option>
+            </select>
+          </div>
+
+          <div class="input-group digitalInputs">
+            <label for="digitalMessage">Binary Message (e.g. 101010):</label>
+            <input
+              type="text"
+              name="digitalMessage"
+              pattern="[01]+"
+              placeholder="e.g. 10101"
+              value="{{ digitalMessage | default('') }}"
+            />
+          </div>
+          <button class="submit" type="submit">Generate</button>
+        </div>
+
+        <!-- Digital Input Field -->
+        <!-- <div id="digitalInputs" class="input-section"> -->
+          <!-- Common Carrier Input Fields -->
+        </div>
+      </form>
+    </section>
+    {% if img_path %}
+    <section class="output-section">
+      <div class="mid">
+        <h1>Input Signals</h1>
+        <div class="input-waves">
+          <div>
+            <!-- <h3>Message Signal</h3> -->
+            <img src="{{ msg_path }}" width="500" height="160"/>
+          </div>
+        </div>
+        <div class="input-waves">
+          <div>
+            <!-- <h3>Carrier Signal</h3> -->
+            <img src="{{ carrier_path }}" width="500" height="160" />
+          </div>
+        </div>
+        <h2>Output Modulated Wave</h2>
+        <div class="input-waves">
+          <div>
+            <img src="{{ img_path }}" width="500" height="160"/>
+            <h3>Modulation Index: {{ mod_index }}</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+    <script src="/static/script.js"></script>
+  </body>
+</html>

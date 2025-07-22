@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How-it-works</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="nav-bar">
+        <h1>Virtual Lab</h1>
+        <nav class="nav">
+          <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/working">How It Works</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- working content from earlier -->
+    <section id="how-it-works" class="how-section">
+      <!-- <h2>How It Works</h2> -->
+      <div class="steps">
+        <div class="step">
+          <h3>1. Enter Inputs</h3>
+          <p>You provide values such as frequency and amplitude for both message and carrier signals. You also select the waveform type (sine or cosine) and choose a modulation technique (AM, FM, PM, ASK, FSK, PSK, BPSK).</p>
+        </div>
+        <div class="step">
+          <h3>2. Signal Generation</h3>
+          <p>The system generates both the message signal and the carrier signal using your input parameters. It creates visual waveforms for each using mathematical functions.</p>
+        </div>
+        <div class="step">
+          <h3>3. Modulation</h3>
+          <p>Based on your selected modulation type:
+            <ul>
+              <li><strong>AM (Amplitude Modulation):</strong> Varies carrier amplitude with the message signal.</li>
+              <li><strong>FM (Frequency Modulation):</strong> Varies carrier frequency with the message signal.</li>
+              <li><strong>PM (Phase Modulation):</strong> Varies carrier phase with the message signal.</li>
+              <li><strong>ASK (Amplitude Shift keying):</strong> Varies carrier amplitude shifting key with the message signal.</li>
+              <li><strong>FSK (Frequency Shift keying):</strong> Varies carrier  Frequency shifting key with the message signal.</li>
+              <li><strong>PSK (Phase Shift keying):</strong> Varies carrier Phase shifting key with the message signal.</li>
+              <li><strong>BPSK (Binary Phase Shift keying):</strong> Varies carrier Binary phase key with the message signal.</li>
+            </ul>
+          </p>
+        </div>
+        <div class="step">
+          <h3>4. Visualization</h3>
+          <p>The resulting modulated signal is displayed along with the original input signals as plots. This helps in understanding how modulation affects signal shape.</p>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
