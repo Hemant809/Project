@@ -1,6 +1,9 @@
 services:
   - type: web
-    name: your-app-name
+    name: modulation-app # ← Change to your app name
     runtime: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn main:app"
+    envVars:
+      - key: PORT
+        value: 8000
