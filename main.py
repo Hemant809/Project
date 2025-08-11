@@ -40,6 +40,10 @@ async def about(request: Request):
 @app.get("/working")
 async def working(request: Request):
     return templates.TemplateResponse("working.html", {"request": request})
+    
+@app.get("/contact", response_class=HTMLResponse)
+async def contact_form(request: Request):
+    return templates.TemplateResponse("contact.html", {"request": request})
 
 @app.post("/contact")
 async def send_query(
