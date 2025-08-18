@@ -145,7 +145,10 @@
         <div class="input-waves">
           <div>
             <img src="{{ img_path }}" width="500" height="160"/>
+            {% if modulationType != "QPSK" %}
             <h3>Modulation Index: {{ mod_index }}</h3>
+            {% endif %}
+
           </div>
         </div>
       </div>

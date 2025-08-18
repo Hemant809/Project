@@ -122,7 +122,7 @@ def generate_modulated_signal(mod_type, msg_freq, msg_amp,
 
             # For plotting/debugging
             message = (I_wave, Q_wave)
-            # mod_index = np.pi/2
+            mod_index = None
 
 
     # import matplotlib.pyplot as plt
