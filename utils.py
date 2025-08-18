@@ -99,26 +99,44 @@ def generate_modulated_signal(mod_type, msg_freq, msg_amp,
             if len(bits) % 2 != 0:
                 bits.append(0)
 
-            I_bits = bits[0::2]
-            Q_bits = bits[1::2]
+            I_bits = bits[0::2]  # even-index bits
+            Q_bits = bits[1::2]  # odd-index bits
 
-            # Map bits to +1/-1
-            I_symbols = 2*np.array(I_bits) - 1
-            Q_symbols = 2*np.array(Q_bits) - 1
+            # Map bits {0,1} → symbols {-1,+1}
+            I_symbols = [1 if b == 0 else -1 for b in I_bits]
+            Q_symbols = [1 if b == 0 else -1 for b in Q_bits]
 
             samples_per_symbol = len(t) // len(I_symbols)
 
+            # Expand symbols
             I_wave = np.repeat(I_symbols, samples_per_symbol)
             Q_wave = np.repeat(Q_symbols, samples_per_symbol)
 
+            # Match lengths
             I_wave = np.pad(I_wave, (0, len(t) - len(I_wave)), mode='constant')
             Q_wave = np.pad(Q_wave, (0, len(t) - len(Q_wave)), mode='constant')
 
-            # QPSK modulation
+            # Generate QPSK signal
             wave = carrier_amp * (I_wave * np.cos(2*np.pi*carrier_freq*t) -
-                                  Q_wave * np.sin(2*np.pi*carrier_freq*t))
+                          Q_wave * np.sin(2*np.pi*carrier_freq*t))
 
-            message = I_wave  # For plotting baseband
-            mod_index = np.pi / 2
+            # For plotting/debugging
+            message = (I_wave, Q_wave)
+            # mod_index = np.pi/2
+
+
+    # import matplotlib.pyplot as plt
+
+# After creating I_wave and Q_wave for QPSK:
+    # plt.figure()
+    # plt.scatter(I_wave[::samples_per_symbol], Q_wave[::samples_per_symbol], color='blue')
+    # plt.axhline(0, color='gray', linewidth=0.5)
+    # plt.axvline(0, color='gray', linewidth=0.5)
+    # plt.title("QPSK Constellation Diagram")
+    # plt.xlabel("In-phase (I)")
+    # plt.ylabel("Quadrature (Q)")
+    # plt.grid(True)
+    # plt.show()
+
 
     return t, message, carrier, wave, mod_index
