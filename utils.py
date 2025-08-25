@@ -95,34 +95,44 @@ def generate_modulated_signal(mod_type, msg_freq, msg_amp,
             mod_index = np.pi
 
         elif mod_type == "QPSK":
-            # Ensure even number of bits
+        # Ensure even number of bits
             if len(bits) % 2 != 0:
                 bits.append(0)
 
             I_bits = bits[0::2]  # even-index bits
             Q_bits = bits[1::2]  # odd-index bits
 
-            # Map bits {0,1} → symbols {-1,+1}
-            I_symbols = [1 if b == 0 else -1 for b in I_bits]
-            Q_symbols = [1 if b == 0 else -1 for b in Q_bits]
+            # Map 2-bit pair to QPSK phase: 00->0°, 01->90°, 11->180°, 10->270°
+            phase_map = {
+                (0,0): 0,
+                (0,1): 90,
+                (1,1): 180,
+                (1,0): 270
+            }
 
-            samples_per_symbol = len(t) // len(I_symbols)
+            # Generate QPSK waveform
+            wave = np.zeros_like(t)
+            I_wave_full = np.zeros_like(t)
+            Q_wave_full = np.zeros_like(t)
 
-            # Expand symbols
-            I_wave = np.repeat(I_symbols, samples_per_symbol)
-            Q_wave = np.repeat(Q_symbols, samples_per_symbol)
+            samples_per_symbol = len(t) // len(I_bits)
 
-            # Match lengths
-            I_wave = np.pad(I_wave, (0, len(t) - len(I_wave)), mode='constant')
-            Q_wave = np.pad(Q_wave, (0, len(t) - len(Q_wave)), mode='constant')
+            for i, (I_bit, Q_bit) in enumerate(zip(I_bits, Q_bits)):
+                phase_deg = phase_map[(I_bit, Q_bit)]
+                phase_rad = np.deg2rad(phase_deg)
+                start = i * samples_per_symbol
+                end = start + samples_per_symbol
+                if end > len(t):
+                    end = len(t)
+                wave[start:end] = carrier_amp * np.cos(2*np.pi*carrier_freq*t[start:end] + phase_rad)
 
-            # Generate QPSK signal
-            wave = carrier_amp * (I_wave * np.cos(2*np.pi*carrier_freq*t) -
-                          Q_wave * np.sin(2*np.pi*carrier_freq*t))
+                # Store I/Q for plotting/debugging
+                I_wave_full[start:end] = np.cos(phase_rad)
+                Q_wave_full[start:end] = np.sin(phase_rad)
 
-            # For plotting/debugging
-            message = (I_wave, Q_wave)
+            message = (I_wave_full, Q_wave_full)
             mod_index = None
+
 
 
     # import matplotlib.pyplot as plt
