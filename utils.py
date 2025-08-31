@@ -95,58 +95,42 @@ def generate_modulated_signal(mod_type, msg_freq, msg_amp,
             mod_index = np.pi
 
         elif mod_type == "QPSK":
-        # Ensure even number of bits
+            # --- Prepare bits ---
             if len(bits) % 2 != 0:
                 bits.append(0)
 
-            I_bits = bits[0::2]  # even-index bits
-            Q_bits = bits[1::2]  # odd-index bits
-
-            # Map 2-bit pair to QPSK phase: 00->0°, 01->90°, 11->180°, 10->270°
-            phase_map = {
-                (0,0): 0,
-                (0,1): 90,
-                (1,1): 180,
-                (1,0): 270
+            # Gray mapping to 45°, 135°, 225°, 315° using normalized amplitudes (±1/√2)
+            # 00 -> ( +,+ ), 01 -> ( -, + ), 11 -> ( -, - ), 10 -> ( +, - )
+            sym_map = {
+                (0, 0): ( 1/np.sqrt(2),  1/np.sqrt(2)),
+                (0, 1): (-1/np.sqrt(2),  1/np.sqrt(2)),
+                (1, 1): (-1/np.sqrt(2), -1/np.sqrt(2)),
+                (1, 0): ( 1/np.sqrt(2), -1/np.sqrt(2)),
             }
 
-            # Generate QPSK waveform
-            wave = np.zeros_like(t)
-            I_wave_full = np.zeros_like(t)
-            Q_wave_full = np.zeros_like(t)
+            I_bits = bits[0::2]
+            Q_bits = bits[1::2]
+            n_syms = len(I_bits)
+            samples_per_symbol = max(1, len(t) // n_syms)
 
-            samples_per_symbol = len(t) // len(I_bits)
+            # Baseband I/Q step waveforms
+            I_bb = np.zeros_like(t, dtype=float)
+            Q_bb = np.zeros_like(t, dtype=float)
 
-            for i, (I_bit, Q_bit) in enumerate(zip(I_bits, Q_bits)):
-                phase_deg = phase_map[(I_bit, Q_bit)]
-                phase_rad = np.deg2rad(phase_deg)
-                start = i * samples_per_symbol
-                end = start + samples_per_symbol
-                if end > len(t):
-                    end = len(t)
-                wave[start:end] = carrier_amp * np.cos(2*np.pi*carrier_freq*t[start:end] + phase_rad)
+            for i_sym, (Ib, Qb) in enumerate(zip(I_bits, Q_bits)):
+                Iamp, Qamp = sym_map[(Ib, Qb)]
+                start_idx = i_sym * samples_per_symbol
+                end_idx = min(len(t), start_idx + samples_per_symbol)
+                I_bb[start_idx:end_idx] = Iamp
+                Q_bb[start_idx:end_idx] = Qamp
 
-                # Store I/Q for plotting/debugging
-                I_wave_full[start:end] = np.cos(phase_rad)
-                Q_wave_full[start:end] = np.sin(phase_rad)
+            # Passband synthesis: s(t) = Ac [ I(t) cos(2πfct) - Q(t) sin(2πfct) ]
+            cos_c = np.cos(2 * np.pi * carrier_freq * t)
+            sin_c = np.sin(2 * np.pi * carrier_freq * t)
+            wave = carrier_amp * (I_bb * cos_c - Q_bb * sin_c)
 
-            message = (I_wave_full, Q_wave_full)
+            # For plotting: message carries I(t) and Q(t) as columns
+            message = np.column_stack([I_bb, Q_bb])
             mod_index = None
-
-
-
-    # import matplotlib.pyplot as plt
-
-# After creating I_wave and Q_wave for QPSK:
-    # plt.figure()
-    # plt.scatter(I_wave[::samples_per_symbol], Q_wave[::samples_per_symbol], color='blue')
-    # plt.axhline(0, color='gray', linewidth=0.5)
-    # plt.axvline(0, color='gray', linewidth=0.5)
-    # plt.title("QPSK Constellation Diagram")
-    # plt.xlabel("In-phase (I)")
-    # plt.ylabel("Quadrature (Q)")
-    # plt.grid(True)
-    # plt.show()
-
 
     return t, message, carrier, wave, mod_index
